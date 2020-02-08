@@ -1,29 +1,28 @@
 <script>
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 
-    export var title = "";
+    // Parent events need to be passed down to allow component to be dragged. 
+    export let events = {
+        move: e => {},
+        start: e => {},
+        stop: e => {},
+    }
 
-    var container;
-    var dragging = false;
-    var currentX;
-    var currentY;
-    var initialX;
-    var initialY;
-    var xOffset = 0;
-    var yOffset = 0;
+    export let title = "";
+
+    let container;
+    let dragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    let xOffset = 0;
+    let yOffset = 0;
 
     var selected = false;
 
-    // Event listeners need to be registered to the window when de-selecting the container.
-    onMount(() => {
-        window.addEventListener('mousedown', e => handleClick(e, container));
-        window.addEventListener('touchstart', e => handleClick(e, container));
-    });
-    
-    onDestroy(() => {
-        window.removeEventListener('mousedown', e => handleClick(e, container));
-        window.removeEventListener('touchstart', e => handleClick(e, container));
-    });
+    onMount(() => events.start = e => handleClick(e, container));
+    onDestroy(() => events.start = e => {});
     
     function handleClick(e, container) {
         var rect = container.getBoundingClientRect();
@@ -42,16 +41,13 @@
         if (event.type === "touchstart") {
             initialX = event.touches[0].clientX - xOffset;
             initialY = event.touches[0].clientY - yOffset;
-
-            window.addEventListener("touchmove", e => drag(e, container));
-            window.addEventListener("touchend", e => dragEnd(e, container));
         } else {
             initialX = event.clientX - xOffset;
             initialY = event.clientY - yOffset;
-
-            window.addEventListener("mousemove", e => drag(e, container));
-            window.addEventListener("mouseup", e => dragEnd(e, container));
         }
+
+        events.move = e => drag(e, container);
+        events.stop = e => dragEnd(e, container);
 
         dragging = true;
 
@@ -66,10 +62,8 @@
         dragging = false;
 
         // When the drag ends, remove the event listeners.
-        window.removeEventListener("mousemove", e => drag(e, container));
-        window.removeEventListener("mouseup", e => dragEnd(e, container));
-        window.removeEventListener("touchmove", e => drag(e, container));
-        window.removeEventListener("touchend", e => dragEnd(e, container));
+        events.move = e => drag(e, container);
+        events.stop = e => dragEnd(e, container);
     }
 
     function drag(e, container) {
