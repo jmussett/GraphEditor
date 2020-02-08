@@ -1,21 +1,36 @@
 <script>
     import Draggable from './Draggable.svelte';
     import Socket from './Socket.svelte';
+
+    export var node = {
+        title: "Test",
+        inputs: [],
+        outputs: []
+    };
 </script>
 
-<Draggable>
+<Draggable title={node.name}>
     <div class="audioNode">
+        {#if node.inputs.length > 0}
         <div class="inputs">
+            <label>Inputs</label>
             <ul class="sockets">
-                <li><Socket /><span>Test 1</span></li>
+            {#each node.inputs as { position, label }}
+                <li><Socket bind:position /><span>{label}</span></li>
+            {/each}
             </ul>
         </div>
+        {/if}
+        {#if node.outputs.length > 0}
         <div class="outputs">
+            <label>Outputs</label>
             <ul class="sockets">
-                <li><span>Test 2</span><Socket /></li>
-                <li><span>Test 3</span><Socket /></li>
+            {#each node.outputs as { position, label }}
+                <li><span>{label}</span><Socket bind:position/></li>
+            {/each}
             </ul>
         </div>
+        {/if}
     </div>
 </Draggable>
 
@@ -27,34 +42,37 @@
     }
 
     .inputs, .outputs {
-        width: 50%;
-        padding: 5px 2px;
+        width: 100%;
+        padding: 0 3px;
+    }
+
+    label {
+        color: #dddddd;
+        font-size: x-small;
+        display: block;
+        text-align: center;
     }
 
     .sockets {
         margin: 0;
         padding: 0;
         list-style: none;
-        white-space: nowrap;
         width: 100%;
-        position: sticky;
     }
     
     .sockets li {
         display: inline-flex;
         width: 100%;
         height: 20px;
-        line-height: 20px;
+        line-height: 10px;
         align-items: center;
     }
 
     .sockets li span {
-        width: 100% ;
+        width: 100%;
         color: #c0bfbf;
         font-size: x-small;
-        padding: 0 3%;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
+        padding: 0 5px;
     }
 
     .inputs {

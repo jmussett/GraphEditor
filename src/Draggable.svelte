@@ -1,6 +1,8 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
 
+    export var title = "";
+
     var container;
     var dragging = false;
     var currentX;
@@ -12,12 +14,16 @@
 
     var selected = false;
 
-    // Event listeners need to be registered to the document when de-selecting the container.
-    onMount(() =>
-        document.addEventListener('mousedown', e => handleClick(e, container)));
-
-    onDestroy(() =>
-        document.removeEventListener('mousedown', e => handleClick(e, container)));
+    // Event listeners need to be registered to the window when de-selecting the container.
+    onMount(() => {
+        window.addEventListener('mousedown', e => handleClick(e, container));
+        window.addEventListener('touchstart', e => handleClick(e, container));
+    });
+    
+    onDestroy(() => {
+        window.removeEventListener('mousedown', e => handleClick(e, container));
+        window.removeEventListener('touchstart', e => handleClick(e, container));
+    });
     
     function handleClick(e, container) {
         var rect = container.getBoundingClientRect();
@@ -29,7 +35,6 @@
         if (withinBounds) selected = true;
         else selected = false;
     }
-
     
     // Initial function for initiating drag
     function dragStart(event) {
@@ -37,16 +42,21 @@
         if (event.type === "touchstart") {
             initialX = event.touches[0].clientX - xOffset;
             initialY = event.touches[0].clientY - yOffset;
+
+            window.addEventListener("touchmove", e => drag(e, container));
+            window.addEventListener("touchend", e => dragEnd(e, container));
         } else {
             initialX = event.clientX - xOffset;
             initialY = event.clientY - yOffset;
+
+            window.addEventListener("mousemove", e => drag(e, container));
+            window.addEventListener("mouseup", e => dragEnd(e, container));
         }
 
         dragging = true;
 
-        // We register events to the document to give the mouse full control over the dragging.
-        document.addEventListener("mousemove", e => drag(e, container))
-        document.addEventListener("mouseup", e => dragEnd(e, container))
+        // We register events to the window to give the mouse full control over the dragging.
+        
     }
 
     function dragEnd(event, container) {
@@ -56,19 +66,20 @@
         dragging = false;
 
         // When the drag ends, remove the event listeners.
-        document.removeEventListener("mousemove", e => drag(e, container))
-        document.removeEventListener("mouseup", e => dragEnd(e, container))
+        window.removeEventListener("mousemove", e => drag(e, container));
+        window.removeEventListener("mouseup", e => dragEnd(e, container));
+        window.removeEventListener("touchmove", e => drag(e, container));
+        window.removeEventListener("touchend", e => dragEnd(e, container));
     }
 
     function drag(e, container) {
         if (!dragging) return;
 
-        e.preventDefault();
-      
         if (e.type === "touchmove") {
             currentX = e.touches[0].clientX - initialX;
             currentY = e.touches[0].clientY - initialY;
         } else {
+            e.preventDefault();
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
         }
@@ -88,6 +99,7 @@
     <div class="selector"
         on:touchstart={dragStart}
         on:mousedown={dragStart}>
+        <label>{title}</label>
     </div>
     <slot/>
 </div>
@@ -98,16 +110,26 @@
         height: 20px;
         border-bottom: 1px solid black;
     }
+
+    label {
+        color: #dddddd;
+        font-size: small;
+        display: block;
+        text-align: center;
+    }
+
     .drag {
         position: absolute;
         border: 0.5px solid;
         border-radius: 7px;
         background-color: #3a393a;
         margin: 0.5px;
+        min-width: 100px;
+        min-height: 50px;
     }
 
     .drag:hover {
-        border-color: #adacac;;
+        border-color: #adacac;
     }
 
     .selected:hover {
