@@ -1,17 +1,13 @@
 <script>
     import Draggable from './Draggable.svelte';
     import Socket from './Socket.svelte';
-    
-    export let events = {};
 
-    export var node = {
-        title: "Test",
-        inputs: [],
-        outputs: []
-    };
+    export let node;
+    
+    node.events = {};
 </script>
 
-<Draggable title={node.name} events={events}>
+<Draggable title={node.name} events={node.events}>
     <div class="audioNode">
         {#if node.inputs.length > 0}
         <div class="inputs">

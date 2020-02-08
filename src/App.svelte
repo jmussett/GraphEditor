@@ -1,12 +1,6 @@
 <script>
 	import AudioNode from "./AudioNode.svelte";
 
-	let events = {
-        move: e => {},
-        start: e => {},
-        stop: e => {}
-    }
-
 	var graph = {
 		nodes: [
 			{
@@ -39,19 +33,22 @@
 			}
 		]
 	};
-	
+
+	let move = e => graph.nodes.forEach(n => n.events && n.events.move && n.events.move(e));
+	let start = e => graph.nodes.forEach(n => n.events &&  n.events.start && n.events.start(e));
+	let stop = e => graph.nodes.forEach(n => n.events &&  n.events.stop && n.events.stop(e));
 </script>
 
 <div
-	on:mousemove={e => events.move(e)}
-	on:mousedown={e => events.start(e)}
-	on:mouseup={e => events.stop(e)}
-	on:touchmove={e => events.move(e)}
-	on:touchstart={e => events.start(e)}
-	on:touchend={e => events.stop(e)}
+	on:mousemove={e => move(e)}
+	on:mousedown={e => start(e)}
+	on:mouseup={e => stop(e)}
+	on:touchmove={e => move(e)}
+	on:touchstart={e => start(e)}
+	on:touchend={e => stop(e)}
 >
 	{#each graph.nodes as node}
-	<AudioNode node={node} events={events}></AudioNode>
+	<AudioNode node={node}></AudioNode>
 	{/each}
 </div>
 

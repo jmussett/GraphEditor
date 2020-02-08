@@ -19,54 +19,47 @@
     let xOffset = 0;
     let yOffset = 0;
 
-    var selected = false;
+    let selected = false;
+    let isAbove = false;
 
-    onMount(() => events.start = e => handleClick(e, container));
+    onMount(() => events.start = handleClick);
     onDestroy(() => events.start = e => {});
-    
-    function handleClick(e, container) {
-        var rect = container.getBoundingClientRect();
-        
-        // When clicking, the mouse needs to be within the containers bounds to be selected.
-        var withinBounds = e.clientX >= rect.left && e.clientX <= rect.right &&
-                           e.clientY >= rect.top && e.clientY <= rect.bottom;
-        
-        if (withinBounds) selected = true;
+
+    function handleClick(e) {
+        // When clicking, the mouse needs to be above the containers to be selected.
+        if (isAbove) selected = true;
         else selected = false;
     }
     
     // Initial function for initiating drag
-    function dragStart(event) {
+    function dragStart(e) {
         // event can be either touchstart or mousedown
         if (event.type === "touchstart") {
-            initialX = event.touches[0].clientX - xOffset;
-            initialY = event.touches[0].clientY - yOffset;
+            initialX = e.touches[0].clientX - xOffset;
+            initialY = e.touches[0].clientY - yOffset;
         } else {
-            initialX = event.clientX - xOffset;
-            initialY = event.clientY - yOffset;
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
         }
 
-        events.move = e => drag(e, container);
-        events.stop = e => dragEnd(e, container);
+        events.move = drag;
+        events.stop = dragEnd;
 
         dragging = true;
-
-        // We register events to the window to give the mouse full control over the dragging.
-        
     }
 
-    function dragEnd(event, container) {
+    function dragEnd(event) {
         initialX = currentX;
         initialY = currentY;
 
         dragging = false;
 
-        // When the drag ends, remove the event listeners.
-        events.move = e => drag(e, container);
-        events.stop = e => dragEnd(e, container);
+        // When the drag ends, remove the events.
+        events.move = e => {};
+        events.stop = e => {};
     }
 
-    function drag(e, container) {
+    function drag(e) {
         if (!dragging) return;
 
         if (e.type === "touchmove") {
@@ -89,7 +82,9 @@
 
 <div class="drag"
     class:selected
-    bind:this={container}>
+    bind:this={container}
+    on:mouseenter={e => isAbove = true}
+    on:mouseleave={e => isAbove = false}>
     <div class="selector"
         on:touchstart={dragStart}
         on:mousedown={dragStart}>
