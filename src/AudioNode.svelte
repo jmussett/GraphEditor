@@ -1,36 +1,43 @@
 <script>
     import Draggable from './Draggable.svelte';
+    import Selectable from './Selectable.svelte';
     import Socket from './Socket.svelte';
 
     export let node;
-    
+
+    // The top level container needs to be shared with the Draggable
+    // component to allow it to be dragged.
+    let container;
+
     node.events = {};
 </script>
 
-<Draggable title={node.name} events={node.events}>
-    <div class="audioNode">
-        {#if node.inputs.length > 0}
-        <div class="inputs">
-            <label>Inputs</label>
-            <ul class="sockets">
-            {#each node.inputs as { position, label }}
-                <li><Socket bind:position /><span>{label}</span></li>
-            {/each}
-            </ul>
+<Selectable events={node.events} bind:container={container} absolute={true}>
+    <Draggable events={node.events} container={container} title={node.name}>
+        <div class="audioNode">
+            {#if node.inputs.length > 0}
+            <div class="inputs">
+                <label>Inputs</label>
+                <ul class="sockets">
+                {#each node.inputs as { position, label }}
+                    <li><Socket bind:position /><span>{label}</span></li>
+                {/each}
+                </ul>
+            </div>
+            {/if}
+            {#if node.outputs.length > 0}
+            <div class="outputs">
+                <label>Outputs</label>
+                <ul class="sockets">
+                {#each node.outputs as { position, label }}
+                    <li><span>{label}</span><Socket bind:position/></li>
+                {/each}
+                </ul>
+            </div>
+            {/if}
         </div>
-        {/if}
-        {#if node.outputs.length > 0}
-        <div class="outputs">
-            <label>Outputs</label>
-            <ul class="sockets">
-            {#each node.outputs as { position, label }}
-                <li><span>{label}</span><Socket bind:position/></li>
-            {/each}
-            </ul>
-        </div>
-        {/if}
-    </div>
-</Draggable>
+    </Draggable>
+</Selectable>
 
 <style>
 	.audioNode {

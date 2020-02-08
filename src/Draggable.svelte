@@ -1,16 +1,17 @@
 <script>
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-
     // Parent events need to be passed down to allow component to be dragged. 
-    export let events = {
-        move: e => {},
-        start: e => {},
-        stop: e => {},
-    }
+    export let events;
 
     export let title = "";
 
-    let container;
+    let self;
+
+    // The "draggable" container element can be passed in as a dependancy
+    // if this component needs a wrapper.
+    export let container = null;
+
+    $: if(!container) container = self;
+
     let dragging = false;
     let currentX;
     let currentY;
@@ -19,18 +20,6 @@
     let xOffset = 0;
     let yOffset = 0;
 
-    let selected = false;
-    let isAbove = false;
-
-    onMount(() => events.start = handleClick);
-    onDestroy(() => events.start = e => {});
-
-    function handleClick(e) {
-        // When clicking, the mouse needs to be above the containers to be selected.
-        if (isAbove) selected = true;
-        else selected = false;
-    }
-    
     // Initial function for initiating drag
     function dragStart(e) {
         // event can be either touchstart or mousedown
@@ -80,11 +69,7 @@
 
 </script>
 
-<div class="drag"
-    class:selected
-    bind:this={container}
-    on:mouseenter={e => isAbove = true}
-    on:mouseleave={e => isAbove = false}>
+<div class="drag" bind:this={self}>
     <div class="selector"
         on:touchstart={dragStart}
         on:mousedown={dragStart}>
@@ -108,27 +93,10 @@
     }
 
     .drag {
-        position: absolute;
-        border: 0.5px solid;
-        border-radius: 7px;
-        background-color: #3a393a;
         margin: 0.5px;
         min-width: 100px;
         min-height: 50px;
     }
 
-    .drag:hover {
-        border-color: #adacac;
-    }
-
-    .selected:hover {
-        border-color: #96b2ce;
-        border-width: 1px;
-        margin: 0px;
-    }
-
-    .selected {
-        border-color: #8ca6c0;
-        z-index: 1;
-    }
+    
 </style>

@@ -34,18 +34,18 @@
 		]
 	};
 
+	let click = e => graph.nodes.forEach(n => n.events &&  n.events.click && n.events.click(e));
 	let move = e => graph.nodes.forEach(n => n.events && n.events.move && n.events.move(e));
-	let start = e => graph.nodes.forEach(n => n.events &&  n.events.start && n.events.start(e));
 	let stop = e => graph.nodes.forEach(n => n.events &&  n.events.stop && n.events.stop(e));
 </script>
 
 <div
-	on:mousemove={e => move(e)}
-	on:mousedown={e => start(e)}
-	on:mouseup={e => stop(e)}
+	on:touchstart={e => click(e)}
+	on:mousedown={e => click(e)}
 	on:touchmove={e => move(e)}
-	on:touchstart={e => start(e)}
+	on:mousemove={e => move(e)}
 	on:touchend={e => stop(e)}
+	on:mouseup={e => stop(e)}
 >
 	{#each graph.nodes as node}
 	<AudioNode node={node}></AudioNode>
