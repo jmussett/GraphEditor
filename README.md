@@ -3,6 +3,8 @@ This is an interactive editor for viewing and editing complex graph structures.
 
 Written using the [Svelte Compiler](https://svelte.dev/), it uses vanilla javascript to enable drag and drop functionality for graph nodes and displays relationships between the inputs and outputs of each node.
 
+![Graph Editor Screenshot](wiki/screenshot.png)
+
 ## Graph data format
 
 The JSON format used by the editor uses a simple flat structure of a graph, with a seperate array to define relations:
