@@ -14,25 +14,25 @@
     // if this component needs a wrapper.
     export let container = null;
 
-    $: if(!container) container = self;
+    export let x = 0;
+    export let y = 0;
+
+    $: if (!container) container = self;
+    $: if (container) container.style.transform = "translate3d(" + x + "px, " + y + "px, 0)";
 
     let dragging = false;
-    let currentX;
-    let currentY;
     let initialX;
     let initialY;
-    let xOffset = 0;
-    let yOffset = 0;
 
     // Initial function for initiating drag
     function dragStart(e) {
         // event can be either touchstart or mousedown
         if (event.type === "touchstart") {
-            initialX = e.touches[0].clientX - xOffset;
-            initialY = e.touches[0].clientY - yOffset;
+            initialX = e.touches[0].clientX - x;
+            initialY = e.touches[0].clientY - y;
         } else {
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
+            initialX = e.clientX - x;
+            initialY = e.clientY - y;
         }
 
         events.move = drag;
@@ -42,8 +42,8 @@
     }
 
     function dragEnd(event) {
-        initialX = currentX;
-        initialY = currentY;
+        initialX = x;
+        initialY = y;
 
         dragging = false;
 
@@ -56,19 +56,13 @@
         if (!dragging) return;
 
         if (e.type === "touchmove") {
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
+            x = e.touches[0].clientX - initialX;
+            y = e.touches[0].clientY - initialY;
         } else {
             e.preventDefault();
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
+            x = e.clientX - initialX;
+            y = e.clientY - initialY;
         }
-
-        xOffset = currentX;
-        yOffset = currentY;
-
-        // Apply translate transform to the container.
-        container.style.transform = "translate3d(" + currentX + "px, " + currentY + "px, 0)";
 
         // Inform any listening nodes that the component is being dragged.
         dispatch('drag');

@@ -1,8 +1,16 @@
 <script>
+ 	import { onMount } from 'svelte';
+
 	import Node from "./Node.svelte";
 	import NodeRelation from "./NodeRelation.svelte";
+	import Layout from "./Layout.js";
 
 	export let graph;
+
+	onMount(() => {
+		var layout = new Layout();
+		graph = layout.initializeGraph(graph);
+	});
 
 	let display;
 

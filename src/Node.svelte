@@ -19,8 +19,8 @@
     }
 </script>
 
-<Selectable bind:events={node.events} bind:container={container} absolute={true}>
-    <Draggable bind:events={node.events} on:drag={drag} container={container} title={node.name}>
+<Selectable bind:events={node.events} bind:container={container} absolute={true} >
+    <Draggable bind:events={node.events} bind:x={node.x} bind:y={node.y} on:drag={drag} container={container} title={node.name}>
         <div class="node">
             {#if node.inputs.length > 0}
                 <div class="inputs">
