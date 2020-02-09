@@ -1,4 +1,17 @@
-<button></button>
+<script>
+export let socket = null;
+
+let self;
+
+$: if (self) {
+    // Performance of this isn't great, need to look at alternative.
+    socket.update = () => socket.position = self.getBoundingClientRect();
+    socket.update();
+}
+
+</script>
+
+<button bind:this={self}></button>
 
 <style>
     button {

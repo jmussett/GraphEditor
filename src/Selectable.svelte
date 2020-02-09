@@ -40,6 +40,7 @@
 
     .selectable:hover {
         border-color: #adacac;
+        z-index: 1;
     }
 
     .selected {

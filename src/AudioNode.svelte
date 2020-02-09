@@ -10,30 +10,43 @@
     let container;
 
     node.events = {};
+
+    // We every time the node is dragged,
+    // we want to update the position of all child sockets.
+    function drag() {
+        node.inputs.forEach(i => i.update && i.update());
+        node.outputs.forEach(o => o.update && o.update());
+    }
 </script>
 
-<Selectable events={node.events} bind:container={container} absolute={true}>
-    <Draggable events={node.events} container={container} title={node.name}>
+<Selectable bind:events={node.events} bind:container={container} absolute={true}>
+    <Draggable bind:events={node.events} on:drag={drag} container={container} title={node.name}>
         <div class="audioNode">
             {#if node.inputs.length > 0}
-            <div class="inputs">
-                <label>Inputs</label>
-                <ul class="sockets">
-                {#each node.inputs as { position, label }}
-                    <li><Socket bind:position /><span>{label}</span></li>
-                {/each}
-                </ul>
-            </div>
+                <div class="inputs">
+                    <label>Inputs</label>
+                    <ul class="sockets">
+                    {#each node.inputs as { label }, i}
+                        <li>
+                            <Socket bind:socket={node.inputs[i]} />
+                            <span>{label}</span>
+                        </li>
+                    {/each}
+                    </ul>
+                </div>
             {/if}
             {#if node.outputs.length > 0}
-            <div class="outputs">
-                <label>Outputs</label>
-                <ul class="sockets">
-                {#each node.outputs as { position, label }}
-                    <li><span>{label}</span><Socket bind:position/></li>
-                {/each}
-                </ul>
-            </div>
+                <div class="outputs">
+                    <label>Outputs</label>
+                    <ul class="sockets">
+                    {#each node.outputs as { label }, i}
+                        <li>
+                            <span>{label}</span>
+                            <Socket bind:socket={node.outputs[i]} />
+                        </li>
+                    {/each}
+                    </ul>
+                </div>
             {/if}
         </div>
     </Draggable>
@@ -44,6 +57,7 @@
         width: 100%;
         position: relative;
         display: flex;
+        user-select: none;
     }
 
     .inputs, .outputs {

@@ -1,4 +1,8 @@
 <script>
+    import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
+    
     // Parent events need to be passed down to allow component to be dragged. 
     export let events;
 
@@ -65,6 +69,9 @@
 
         // Apply translate transform to the container.
         container.style.transform = "translate3d(" + currentX + "px, " + currentY + "px, 0)";
+
+        // Inform any listening nodes that the component is being dragged.
+        dispatch('drag');
     }
 
 </script>
@@ -96,6 +103,7 @@
         margin: 0.5px;
         min-width: 100px;
         min-height: 50px;
+        user-select: none;
     }
 
     
