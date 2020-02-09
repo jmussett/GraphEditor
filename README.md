@@ -5,6 +5,8 @@ Written using the [Svelte Compiler](https://svelte.dev/), it uses vanilla javasc
 
 ![Graph Editor Screenshot](wiki/screenshot.png)
 
+A demo of it is viewable [here](https://jmussett.github.io/GraphEditor/)
+
 ## Graph data format
 
 The JSON format used by the editor uses a simple flat structure of a graph, with a seperate array to define relations:
