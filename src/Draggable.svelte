@@ -26,6 +26,9 @@
 
     // Initial function for initiating drag
     function dragStart(e) {
+        
+        e.preventDefault();
+
         // event can be either touchstart or mousedown
         if (event.type === "touchstart") {
             initialX = e.touches[0].clientX - x;
@@ -55,11 +58,12 @@
     function drag(e) {
         if (!dragging) return;
 
+        e.preventDefault();
+
         if (e.type === "touchmove") {
             x = e.touches[0].clientX - initialX;
             y = e.touches[0].clientY - initialY;
         } else {
-            e.preventDefault();
             x = e.clientX - initialX;
             y = e.clientY - initialY;
         }

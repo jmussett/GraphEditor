@@ -56,7 +56,7 @@
 	.graph {
 		position: relative;
 		background-color: #201f20;
-		width: 100%;
-		height: 100%;
+		width: 5000px;
+		height: 5000px;
 	}
 </style>

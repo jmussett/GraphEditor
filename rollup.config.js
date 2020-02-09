@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
+import serve from 'rollup-plugin-serve'
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -12,13 +13,13 @@ export default {
 		sourcemap: true,
 		format: 'iife',
 		name: 'app',
-		file: 'public/build/bundle.js'
+		file: 'public/GraphEditor/build/bundle.js'
 	},
 	plugins: [
 		svelte({
 			dev: !production,
 			css: css => {
-				css.write('public/build/bundle.css');
+				css.write('public/GraphEditor/build/bundle.css');
 			}
 		}),
 		resolve({
@@ -27,7 +28,11 @@ export default {
 		}),
 		commonjs(),
 
-		!production && serve(),
+		!production && serve({
+			contentBase: ['public', 'public/GraphEditor'],
+			host: 'localhost',
+  			port: 5000,
+		}),
 		!production && livereload('public'),
 		production && terser()
 	],
@@ -35,20 +40,3 @@ export default {
 		clearScreen: false
 	}
 };
-
-function serve() {
-	let started = false;
-
-	return {
-		writeBundle() {
-			if (!started) {
-				started = true;
-
-				require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
-					stdio: ['ignore', 'inherit', 'inherit'],
-					shell: true
-				});
-			}
-		}
-	};
-}
