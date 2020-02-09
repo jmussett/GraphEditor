@@ -21,7 +21,7 @@
 
 <Selectable bind:events={node.events} bind:container={container} absolute={true}>
     <Draggable bind:events={node.events} on:drag={drag} container={container} title={node.name}>
-        <div class="audioNode">
+        <div class="node">
             {#if node.inputs.length > 0}
                 <div class="inputs">
                     <label>Inputs</label>
@@ -53,7 +53,7 @@
 </Selectable>
 
 <style>
-	.audioNode {
+	.node {
         width: 100%;
         position: relative;
         display: flex;

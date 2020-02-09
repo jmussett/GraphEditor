@@ -1,4 +1,4 @@
-import App from './App.svelte';
+import GraphEditor from './GraphEditor.svelte';
 
 var graph = {
 	nodes: [
@@ -104,11 +104,11 @@ var graph = {
 	]
 };
 
-const app = new App({
+const graphEditor = new GraphEditor({
 	target: document.body,
 	props: {
 		graph: graph
 	}
 });
 
-export default app;
+export default graphEditor;

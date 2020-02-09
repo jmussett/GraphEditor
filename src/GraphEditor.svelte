@@ -1,5 +1,5 @@
 <script>
-	import AudioNode from "./AudioNode.svelte";
+	import Node from "./Node.svelte";
 	import NodeRelation from "./NodeRelation.svelte";
 
 	export let graph;
@@ -34,7 +34,7 @@
 	on:mouseup={e => stop(e)}
 >
 	{#each graph.nodes as node, i}
-		<AudioNode bind:node={graph.nodes[i]} />
+		<Node bind:node={graph.nodes[i]} />
 	{/each}
 	
 	{#each graph.relations as relation}
