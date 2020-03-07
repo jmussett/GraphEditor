@@ -8,12 +8,12 @@
     let selected = false;
     let isAbove = false;
 
-    onMount(() => events.subscribe("click", (e) => {
+    onMount(() => events.subscribe("click", () => {
         // When clicking, the mouse needs to be above the containers to be selected.
         if (isAbove) selected = true;
         else selected = false;
     }));
-    
+
     onDestroy(() => events.unsubscribe("click"));
 </script>
 

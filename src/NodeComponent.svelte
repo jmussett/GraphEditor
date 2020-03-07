@@ -1,7 +1,8 @@
 <script context="module">
     import { Socket } from './SocketComponent.svelte';
+    import Draggable from './Draggable';
 
-    export class Node extends EventBroker {
+    export class Node extends Draggable {
         constructor(node) {
             super();
             this.name = node.name;
@@ -16,8 +17,6 @@
 </script>
 
 <script>
-    import EventBroker from './EventBroker';
-    import Draggable from './Draggable.svelte';
     import Selectable from './Selectable.svelte';
     import SocketComponent from './SocketComponent.svelte';
 
@@ -26,17 +25,24 @@
     // The top level container needs to be shared with the Draggable
     // component to allow it to be dragged.
     let container;
+
+    let x = node.reactiveX;
+    let y = node.reactiveY;
+
+    $: if (container) {
+        container.style.transform = "translate3d(" + $x + "px, " +  $y + "px, 0)";
+        node.update();
+    }
 </script>
 
 <Selectable bind:events={node} bind:container={container} absolute={true} >
-    <Draggable
-        bind:events={node}
-        bind:x={node.x}
-        bind:y={node.y}
-        title={node.name}
-        container={container}
-        on:drag={() => node.update()}>
-        <div class="node">
+    <div class="node">
+        <div class="selector"
+            on:touchstart={e => node.dragStart(e, container)}
+            on:mousedown={e => node.dragStart(e, container)}>
+            <label class="title">{node.name}</label>
+        </div>
+        <div class="node-content">
             {#if node.inputs.length > 0}
                 <div class="inputs">
                     <label>Inputs</label>
@@ -64,15 +70,35 @@
                 </div>
             {/if}
         </div>
-    </Draggable>
+    </div>
 </Selectable>
 
 <style>
-	.node {
+    .node {
+        margin: 0.5px;
+        min-width: 100px;
+        min-height: 50px;
+        user-select: none;
+    }
+
+	.node-content {
         width: 100%;
         position: relative;
         display: flex;
         user-select: none;
+    }
+
+    .selector {
+        width: 100%;
+        height: 20px;
+        border-bottom: 1px solid black;
+    }
+
+    .title {
+        color: #dddddd;
+        font-size: small;
+        display: block;
+        text-align: center;
     }
 
     .inputs, .outputs {

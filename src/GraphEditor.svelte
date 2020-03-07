@@ -30,9 +30,7 @@
 
 	let virtualGraph = new Graph(graph);
 
-	onMount(() => {
-		initializeLayout(virtualGraph);
-	});
+	onMount(() => initializeLayout(virtualGraph));
 
 	$: virtualGraph.update();
 </script>
