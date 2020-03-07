@@ -8,14 +8,13 @@
     let selected = false;
     let isAbove = false;
 
-    onMount(() => events.click = handleClick);
-    onDestroy(() => events.click = e => {});
-
-    function handleClick(e) {
+    onMount(() => events.subscribe("click", (e) => {
         // When clicking, the mouse needs to be above the containers to be selected.
         if (isAbove) selected = true;
         else selected = false;
-    }
+    }));
+    
+    onDestroy(() => events.unsubscribe("click"));
 </script>
 
 <div class="selectable" class:selected class:absolute

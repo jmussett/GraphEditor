@@ -1,16 +1,13 @@
-export default class Layout {
-    initializeGraph(graph) {
+class Layout {
+    constructor(graph) {
         this.graph = graph;
         this.horizontalDepth = 0.5;
         this.veritcalDepth = 0.5;
-
-        // Starting node will always be first in sequence.
-        this.initializeNode(0);
-
-        return this.graph;
     }
     initializeNode(index)
     {
+        index = index || 0;
+
         // Set the position of this node based on the current depth.
         this.graph.nodes[index].x = this.horizontalDepth * 300;
         this.graph.nodes[index].y = this.veritcalDepth * 100;
@@ -42,3 +39,4 @@ export default class Layout {
     }
 }
 
+export var initializeLayout = graph => new Layout(graph).initializeNode();

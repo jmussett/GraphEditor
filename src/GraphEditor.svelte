@@ -1,54 +1,55 @@
+<script context="module">
+	import { Node } from "./NodeComponent.svelte";
+	import { Relation } from "./RelationComponent.svelte";
+	
+	export class Graph {
+		constructor(graph) {
+			this.nodes = graph.nodes.map(n => new Node(n));
+			this.relations = graph.relations.map(r => new Relation(r, this));
+		}
+
+		dispatch(name, props) {
+			this.nodes.forEach(n => n.dispatch(name, props))
+		}
+
+		update() {
+			this.nodes.forEach(n => n.update())
+			this.relations.forEach(r => r.update())
+		}
+	}
+</script>
+
 <script>
  	import { onMount } from 'svelte';
 
-	import Node from "./Node.svelte";
-	import NodeRelation from "./NodeRelation.svelte";
-	import Layout from "./Layout.js";
+	import NodeComponent from "./NodeComponent.svelte";
+	import RelationComponent from "./RelationComponent.svelte";
+	import { initializeLayout } from "./Layout.js";
 
 	export let graph;
 
+	let virtualGraph = new Graph(graph);
+
 	onMount(() => {
-		var layout = new Layout();
-		graph = layout.initializeGraph(graph);
+		initializeLayout(virtualGraph);
 	});
 
-	let display;
-
-	$: {
-		for (let i = 0; i < graph.relations.length; i++) {
-			let relation = graph.relations[i];
-
-			let sourceNode = graph.nodes[relation.sourceNodeIndex];
-			let sourceSocket = sourceNode.outputs[relation.sourceSocketIndex];
-			let targetNode = graph.nodes[relation.targetNodeIndex];
-			let targetSocket = targetNode.inputs[relation.targetSocketIndex];
-
-			graph.relations[i].sourcePosition = sourceSocket.position;
-			graph.relations[i].targetPosition = targetSocket.position;
-		}
-	}
-
-	let click = e => graph.nodes.forEach(n => n.events && n.events.click && n.events.click(e));
-	let move = e => graph.nodes.forEach(n => n.events && n.events.move && n.events.move(e));
-	let stop = e => graph.nodes.forEach(n => n.events &&  n.events.stop && n.events.stop(e));
+	$: virtualGraph.update();
 </script>
 
 <div class="graph"
-	on:touchstart={e => click(e)}
-	on:mousedown={e => click(e)}
-	on:touchmove={e => move(e)}
-	on:mousemove={e => move(e)}
-	on:touchend={e => stop(e)}
-	on:mouseup={e => stop(e)}
+	on:touchstart={e => virtualGraph.dispatch("click", e)}
+	on:mousedown={e => virtualGraph.dispatch("click", e)}
+	on:touchmove={e => virtualGraph.dispatch("move", e)}
+	on:mousemove={e => virtualGraph.dispatch("move", e)}
+	on:touchend={e => virtualGraph.dispatch("stop", e)}
+	on:mouseup={e => virtualGraph.dispatch("stop", e)}
 >
-	{#each graph.nodes as node, i}
-		<Node bind:node={graph.nodes[i]} />
+	{#each virtualGraph.nodes as node, i}
+		<NodeComponent bind:node={virtualGraph.nodes[i]} />
 	{/each}
-	
-	{#each graph.relations as relation}
-		<NodeRelation
-			source={relation.sourcePosition}
-			target={relation.targetPosition}/>
+	{#each virtualGraph.relations as relation, i}
+		<RelationComponent bind:relation={virtualGraph.relations[i]}/>
 	{/each}
 </div>
 

@@ -38,8 +38,8 @@
             initialY = e.clientY - y;
         }
 
-        events.move = drag;
-        events.stop = dragEnd;
+        events.subscribe("move", drag);
+        events.subscribe("stop", dragEnd);
 
         dragging = true;
     }
@@ -51,8 +51,8 @@
         dragging = false;
 
         // When the drag ends, remove the events.
-        events.move = e => {};
-        events.stop = e => {};
+        events.unsubscribe("move");
+        events.unsubscribe("stop");
     }
 
     function drag(e) {
