@@ -1,5 +1,5 @@
 <script context="module">
-    import EventBroker from "./EventBroker";
+    import EventBroker from "../Behaviour/EventBroker";
 
     export class Socket extends EventBroker  {
         constructor(label, index, nodeIndex, type) {

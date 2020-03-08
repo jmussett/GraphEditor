@@ -1,4 +1,4 @@
-import GraphEditor from './GraphEditor.svelte';
+import GraphEditor from './Components/GraphEditor.svelte';
 
 var graph = {
 	nodes: [

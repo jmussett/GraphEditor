@@ -1,8 +1,8 @@
 <script context="module">
-	import EventBroker from "./EventBroker";
-	import ReactiveObject from "./ReactiveObject";
-	import { Node } from "./NodeComponent.svelte";
-	import { Relation } from "./RelationComponent.svelte";
+	import EventBroker from "../Behaviour/EventBroker";
+	import ReactiveObject from "../Behaviour/ReactiveObject";
+	import { Node } from "./Node.svelte";
+	import { Relation } from "./Relation.svelte";
 	
 	export class Graph {
 		constructor(graph) {
@@ -42,9 +42,9 @@
 <script>
  	import { onMount } from 'svelte';
 
-	import NodeComponent from "./NodeComponent.svelte";
-	import RelationComponent from "./RelationComponent.svelte";
-	import { initializeLayout } from "./Layout.js";
+	import NodeComponent from "./Node.svelte";
+	import RelationComponent from "./Relation.svelte";
+	import { initializeLayout } from "../Behaviour/Layout.js";
 
 	export let graph;
 

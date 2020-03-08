@@ -1,6 +1,6 @@
 <script context="module">
-    import { Socket } from './SocketComponent.svelte';
-    import Draggable from './Draggable';
+    import { Socket } from './Socket.svelte';
+    import Draggable from '../Behaviour/Draggable';
 
     export class Node extends Draggable {
         constructor(node, index) {
@@ -19,7 +19,7 @@
 
 <script>
     import Selectable from './Selectable.svelte';
-    import SocketComponent from './SocketComponent.svelte';
+    import SocketComponent from './Socket.svelte';
 
     export let node;
 

@@ -1,6 +1,6 @@
 <script context="module">
     import { writable } from 'svelte/store';
-    import Draggable from './Draggable';
+    import Draggable from '../Behaviour/Draggable';
 
     export class Relation extends Draggable {
         constructor(relation, index, graph) {
