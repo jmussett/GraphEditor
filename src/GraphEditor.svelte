@@ -1,12 +1,13 @@
 <script context="module">
-	import ReactiveArray from "./ReactiveArray";
+	import EventBroker from "./EventBroker";
+	import ReactiveObject from "./ReactiveObject";
 	import { Node } from "./NodeComponent.svelte";
 	import { Relation } from "./RelationComponent.svelte";
 	
 	export class Graph {
 		constructor(graph) {
 			this.nodes = graph.nodes.map((n, i) => new Node(n, i));
-			this.relations = graph.relations.map(r => new Relation(r, this));
+			this.relations = new ReactiveObject(graph.relations.map((r, i) => new Relation(r, i, this)));
 		}
 
 		dispatchToChildren(name, props) {
@@ -17,6 +18,23 @@
 		update() {
 			this.nodes.forEach(n => n.update())
 			this.relations.forEach(r => r.update())
+		}
+
+		removeRelation(socket) {
+			let predicate = socket.type == "input"
+				? r =>
+					r.targetNodeIndex == socket.nodeIndex &&
+					r.targetSocketIndex == socket.index
+				: r =>
+					r.sourceNodeIndex == socket.nodeIndex &&
+					r.sourceSocketIndex == socket.index;
+
+			let index = this.relations.findIndex(predicate);
+
+			if (index >= 0) {
+				this.relations.splice(index, 1);
+				this.relations.dirty();
+			}
 		}
 	}
 </script>
@@ -34,6 +52,13 @@
 
 	onMount(() => initializeLayout(virtualGraph));
 
+	virtualGraph.nodes.forEach(node =>
+		node.subscribe("socketDown", (e, socket) => {
+			virtualGraph.removeRelation(socket)
+		}));
+
+	let relations = virtualGraph.relations.reactive;
+
 	$: virtualGraph.update();
 </script>
 
@@ -48,8 +73,8 @@
 	{#each virtualGraph.nodes as node, i}
 		<NodeComponent bind:node={virtualGraph.nodes[i]} />
 	{/each}
-	{#each virtualGraph.relations as relation, i}
-		<RelationComponent bind:relation={virtualGraph.relations[i]}/>
+	{#each $relations as relation, i (relation.index)}
+		<RelationComponent bind:relation={$relations[i]}/>
 	{/each}
 </div>
 

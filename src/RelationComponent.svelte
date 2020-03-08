@@ -3,8 +3,9 @@
     import Draggable from './Draggable';
 
     export class Relation extends Draggable {
-        constructor(relation, graph) {
+        constructor(relation, index, graph) {
             super(true);
+            this.index = index;
             this.sourceNodeIndex = relation.sourceNodeIndex;
             this.sourceSocketIndex = relation.sourceSocketIndex;
             this.targetNodeIndex = relation.targetNodeIndex;

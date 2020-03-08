@@ -24,7 +24,7 @@
     export let socket;
 </script>
 
-<button bind:this={socket.element}></button>
+<button bind:this={socket.element} on:mousedown={e => socket.dispatch("socketDown", e, socket)}></button>
 
 <style>
     button {

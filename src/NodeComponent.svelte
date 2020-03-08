@@ -30,6 +30,10 @@
     let x = node.position.reactiveX;
     let y = node.position.reactiveY;
 
+    // Forward all socket events to the parent node
+    node.inputs.forEach(s => s.forward(node, "socketDown"));
+    node.outputs.forEach(s => s.forward(node, "socketDown"));
+
     $: if (container) {
         container.style.transform = "translate3d(" + $x + "px, " +  $y + "px, 0)";
         node.update();
