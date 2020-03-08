@@ -1,30 +1,29 @@
 import EventBroker from "./EventBroker";
-import { writable } from 'svelte/store';
+import ReactivePosition from "./ReactivePosition";
 
 export default class Draggable extends EventBroker {
-    constructor() {
+    constructor(absolute) {
         super();
-        this.reactiveX = writable(0);
-        this.reactiveY = writable(0);
-        this.reactiveX.subscribe(value => this._x = value);
-        this.reactiveY.subscribe(value => this._y = value);
 
+        this.position = new ReactivePosition();
+        
         this.initialX = 0;
         this.initialY = 0;
+
+        this.dragging = false;
+        this.absolute = absolute || false;
     }
 
-    dragStart(event, container) {
+    dragStart(event) {
         event.preventDefault();
-
-        this.container = container;
 
         // event can be either touchstart or mousedown
         if (event.type === "touchstart") {
-            this.initialX = event.touches[0].clientX - this.x;
-            this.initialY = event.touches[0].clientY - this.y;
+            this.initialX = event.touches[0].clientX - this.position.x;
+            this.initialY = event.touches[0].clientY - this.position.y;
         } else {
-            this.initialX = event.clientX - this.x;
-            this.initialY = event.clientY - this.y;
+            this.initialX = event.clientX - this.position.x;
+            this.initialY = event.clientY - this.position.y;
         }
 
         this.subscribe("move", e => this.drag(e));
@@ -38,11 +37,12 @@ export default class Draggable extends EventBroker {
         this.initialY = this.y;
 
         this.dragging = false;
-        this.container = null;
 
         // When the drag ends, remove the events.
         this.unsubscribe("move");
         this.unsubscribe("stop");
+
+        this.dispatch("dragEnd");
     }
 
     drag(event) {
@@ -50,30 +50,22 @@ export default class Draggable extends EventBroker {
 
         event.preventDefault();
 
+        let x, y;
+
         if (event.type === "touchmove") {
-            this.x = event.touches[0].clientX - this.initialX;
-            this.y = event.touches[0].clientY - this.initialY;
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
         } else {
-            this.x = event.clientX - this.initialX;
-            this.y = event.clientY - this.initialY;
+            x = event.clientX;
+            y = event.clientY;
         }
-    }
 
-    // since x and y are reactive, we define explicit setters and getters.
-
-    get x() {
-        return this._x;
-    }
-
-    get y() {
-        return this._y;
-    }
-
-    set x(value) {
-        this.reactiveX.set(value);
-    }
-
-    set y(value) {
-        this.reactiveY.set(value);
+        if (this.absolute) {
+            this.position.x = x;
+            this.position.y = y;
+        } else {
+            this.position.x = x - this.initialX;
+            this.position.y = y - this.initialY;
+        }
     }
 }

@@ -3,11 +3,12 @@
     import Draggable from './Draggable';
 
     export class Node extends Draggable {
-        constructor(node) {
+        constructor(node, index) {
             super();
             this.name = node.name;
-            this.inputs = node.inputs.map(s => new Socket(s));
-            this.outputs = node.outputs.map(s => new Socket(s));
+            this.index = index;
+            this.inputs = node.inputs.map((s, i) => new Socket(s.label, i, index, "input"));
+            this.outputs = node.outputs.map((s, i) => new Socket(s.label, i, index, "output"));
         }
         update() {
             this.inputs.forEach(i => i.update());
@@ -26,8 +27,8 @@
     // component to allow it to be dragged.
     let container;
 
-    let x = node.reactiveX;
-    let y = node.reactiveY;
+    let x = node.position.reactiveX;
+    let y = node.position.reactiveY;
 
     $: if (container) {
         container.style.transform = "translate3d(" + $x + "px, " +  $y + "px, 0)";
@@ -38,8 +39,8 @@
 <Selectable bind:events={node} bind:container={container} absolute={true} >
     <div class="node">
         <div class="selector"
-            on:touchstart={e => node.dragStart(e, container)}
-            on:mousedown={e => node.dragStart(e, container)}>
+            on:touchstart={e => node.dragStart(e)}
+            on:mousedown={e => node.dragStart(e)}>
             <label class="title">{node.name}</label>
         </div>
         <div class="node-content">

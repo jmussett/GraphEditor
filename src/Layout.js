@@ -9,8 +9,8 @@ class Layout {
         index = index || 0;
 
         // Set the position of this node based on the current depth.
-        this.graph.nodes[index].x = this.horizontalDepth * 300;
-        this.graph.nodes[index].y = this.veritcalDepth * 100;
+        this.graph.nodes[index].position.x = this.horizontalDepth * 300;
+        this.graph.nodes[index].position.y = this.veritcalDepth * 100;
 
         // We're entering a new node, increase the horizontal depth.
         this.horizontalDepth++;

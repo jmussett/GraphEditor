@@ -1,8 +1,10 @@
 <script context="module">
     import { writable } from 'svelte/store';
+    import Draggable from './Draggable';
 
-    export class Relation {
+    export class Relation extends Draggable {
         constructor(relation, graph) {
+            super(true);
             this.sourceNodeIndex = relation.sourceNodeIndex;
             this.sourceSocketIndex = relation.sourceSocketIndex;
             this.targetNodeIndex = relation.targetNodeIndex;
@@ -14,11 +16,17 @@
             this.curve = writable();
         }
 
-        update() {
+        update(mouseX, mouseY) {
             let targetX = this.targetSocket.x;
-            let sourceX = this.sourceSocket.x;
             let targetY = this.targetSocket.y;
+            
+            let sourceX = this.sourceSocket.x;
             let sourceY = this.sourceSocket.y;
+
+            if (this.dragging) {
+                targetX = mouseX;
+                targetY = mouseY;
+            }
 
             if(!targetX || !targetY || !sourceX || !sourceY || !this.curvature)
                 return;
@@ -52,10 +60,16 @@
 
     let curve;
 
-    $: {
-        relation.update();
+    function update(x, y) {
+        relation.update(x, y);
         curve = relation.curve;
-    } 
+    }
+
+    let x = relation.position.reactiveX;
+    let y = relation.position.reactiveY;
+
+    $: update($x, $y);
+    relation.subscribe("dragEnd", () => update())
 </script>
 
 <div class="node-relation">
@@ -64,7 +78,10 @@
             <feGaussianBlur stdDeviation="5" in="SourceGraphic"/>
         </filter>
         <g>
-            <path class="curve-selector" d={$curve} />
+            <path 
+                on:touchstart={e => relation.dragStart(e)}
+                on:mousedown={e => relation.dragStart(e)}
+                class="curve-selector" d={$curve} />
         </g>
         <g>
             <path class="curve" d={$curve} />
@@ -98,7 +115,6 @@
     }
 
     .curve-selector:hover {
-        
         stroke-opacity: 0.5;
     }
     

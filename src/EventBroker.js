@@ -11,8 +11,15 @@ export default class EventBroker {
         else
             throw new Error(`'${name}' callback is not a functions`)
     }
-    dispatch(name, params) {
+    dispatch(name, ...params) {
         if (this.events[name] instanceof Function)
-            this.events[name](params);
+            this.events[name](...params);
+    }
+    forward(broker, ...events) {
+        for (const name of events) {
+            this.subscribe(name, (...props) => {
+                broker.dispatch(name, ...props);
+            });
+        }
     }
 }

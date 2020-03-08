@@ -1,15 +1,17 @@
 <script context="module">
+	import ReactiveArray from "./ReactiveArray";
 	import { Node } from "./NodeComponent.svelte";
 	import { Relation } from "./RelationComponent.svelte";
 	
 	export class Graph {
 		constructor(graph) {
-			this.nodes = graph.nodes.map(n => new Node(n));
+			this.nodes = graph.nodes.map((n, i) => new Node(n, i));
 			this.relations = graph.relations.map(r => new Relation(r, this));
 		}
 
-		dispatch(name, props) {
+		dispatchToChildren(name, props) {
 			this.nodes.forEach(n => n.dispatch(name, props))
+			this.relations.forEach(n => n.dispatch(name, props))
 		}
 
 		update() {
@@ -36,12 +38,12 @@
 </script>
 
 <div class="graph"
-	on:touchstart={e => virtualGraph.dispatch("click", e)}
-	on:mousedown={e => virtualGraph.dispatch("click", e)}
-	on:touchmove={e => virtualGraph.dispatch("move", e)}
-	on:mousemove={e => virtualGraph.dispatch("move", e)}
-	on:touchend={e => virtualGraph.dispatch("stop", e)}
-	on:mouseup={e => virtualGraph.dispatch("stop", e)}
+	on:touchstart={e => virtualGraph.dispatchToChildren("click", e)}
+	on:mousedown={e => virtualGraph.dispatchToChildren("click", e)}
+	on:touchmove={e => virtualGraph.dispatchToChildren("move", e)}
+	on:mousemove={e => virtualGraph.dispatchToChildren("move", e)}
+	on:touchend={e => virtualGraph.dispatchToChildren("stop", e)}
+	on:mouseup={e => virtualGraph.dispatchToChildren("stop", e)}
 >
 	{#each virtualGraph.nodes as node, i}
 		<NodeComponent bind:node={virtualGraph.nodes[i]} />

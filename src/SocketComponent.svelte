@@ -1,7 +1,13 @@
 <script context="module">
-    export class Socket  {
-        constructor(socket) {
-            this.label = socket.label;
+    import EventBroker from "./EventBroker";
+
+    export class Socket extends EventBroker  {
+        constructor(label, index, nodeIndex, type) {
+            super();
+            this.label = label;
+            this.index = index;
+            this.nodeIndex = nodeIndex;
+            this.type = type;
         }
 
         update() {
